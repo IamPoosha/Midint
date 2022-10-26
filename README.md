@@ -8,4 +8,6 @@ TODO: add
 4) Makefile + how to compile (just include midint.h).
 5) Call for contribution.
 
+<picture>
 <img src="http://github.com/IamPoosha/Midint/blob/main/figures_clang/add.png" alt="Addition efficincy comparison" width="200", height="200"/>
+</picture>

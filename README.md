@@ -7,3 +7,5 @@ TODO: add
 3) Code samples.
 4) Makefile + how to compile (just include midint.h).
 5) Call for contribution.
+
+<img src="http://github.com/IamPoosha/Midint/blob/main/figures_clang/add.png" alt="Addition efficincy comparison" width="200", height="200"/>

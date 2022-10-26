@@ -9,5 +9,25 @@ TODO: add
 5) Call for contribution.
 
 <picture>
-<img src="http://github.com/IamPoosha/Midint/blob/main/figures_clang/add.png" alt="Addition efficincy comparison" width="200", height="200"/>
+<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/add.png" alt="Addition efficiency comparison" width="500"/>
+</picture>
+
+<picture>
+<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/half_mult.png" alt="Multiplication efficiency comparison" width="500"/>
+</picture>
+
+<picture>
+<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/full_mult.png" alt="Full multiplication efficiency comparison" width="500"/>
+</picture>
+
+<picture>
+<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/half_square.png" alt="Squaring efficiency comparison" width="500"/>
+</picture>
+
+<picture>
+<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/less_than.png" alt="Comparison (usually determined by top limb) efficiency comparison" width="500"/>
+</picture>
+
+<picture>
+<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/xor.png" alt="Xor efficiency comparison" width="500"/>
 </picture>

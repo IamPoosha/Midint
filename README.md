@@ -1,12 +1,20 @@
 # Midint
 A medium-sized integer arithmetic library. Lightweight Design for efficiency and flexibility.
 
-TODO: add
-1) Main Purpose
-2) Efficiency plots
-3) Code samples.
-4) Makefile + how to compile (just include midint.h).
-5) Call for contribution.
+## Purpose
+This tiny library defines a `Midint<n>` structure which represents an (unsigned) integer with `n` bits (supports only `n % 64 == 0`). It allows simple arithmetic and logic of these numbers, with the exception of divison which is currently not implemented.
+
+The library is designed for simplicy -- you may seamlessly convert between boost's fixed size `cpp_int`. Also, the following plots demonstrate the performance gain relative to `cpp_int`.
+
+## Code samples
+TODO
+
+## How to compile
+TODO
+
+Feel free to leave comments about this project :)
+
+## Performance comparison
 
 <picture>
 <img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/add.png" alt="Addition efficiency comparison"/>

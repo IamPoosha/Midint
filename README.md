@@ -10,7 +10,7 @@ The library is designed for simplicy -- you may seamlessly convert between boost
 TODO
 
 ## How to compile
-TODO
+Just `#include "miding.h"` wherever you use the library.
 
 Feel free to leave comments about this project :)
 

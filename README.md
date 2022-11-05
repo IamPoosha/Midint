@@ -1,5 +1,5 @@
 # Midint
-A medium-sized integer arithmetic library. Lightweight Design for efficiency and flexibility.
+A medium-sized integer arithmetic library. Lightweight design for efficiency and flexibility.
 
 ## Purpose
 This tiny library defines a `Midint<n>` structure which represents an (unsigned) integer with `n` bits (supports only `n % 64 == 0`). It allows simple arithmetic and logic of these numbers, with the exception of divison which is currently not implemented.

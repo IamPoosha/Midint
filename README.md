@@ -17,25 +17,25 @@ Feel free to leave comments about this project :)
 ## Performance comparison
 
 <picture>
-<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/add.png" alt="Addition efficiency comparison"/>
+<img src="https://github.com/ohadkel/Midint/blob/main/figures_clang/add.png" alt="Addition efficiency comparison"/>
 </picture>
 
 <picture>
-<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/half_mult.png" alt="Multiplication efficiency comparison"/>
+<img src="https://github.com/ohadkel/Midint/blob/main/figures_clang/half_mult.png" alt="Multiplication efficiency comparison"/>
 </picture>
 
 <picture>
-<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/full_mult.png" alt="Full multiplication efficiency comparison"/>
+<img src="https://github.com/ohadkel/Midint/blob/main/figures_clang/full_mult.png" alt="Full multiplication efficiency comparison"/>
 </picture>
 
 <picture>
-<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/half_square.png" alt="Squaring efficiency comparison"/>
+<img src="https://github.com/ohadkel/Midint/blob/main/figures_clang/half_square.png" alt="Squaring efficiency comparison"/>
 </picture>
 
 <picture>
-<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/less_than.png" alt="Comparison (usually determined by top limb) efficiency comparison"/>
+<img src="https://github.com/ohadkel/Midint/blob/main/figures_clang/less_than.png" alt="Comparison (usually determined by top limb) efficiency comparison"/>
 </picture>
 
 <picture>
-<img src="https://github.com/IamPoosha/Midint/blob/main/figures_clang/xor.png" alt="Xor efficiency comparison"/>
+<img src="https://github.com/ohadkel/Midint/blob/main/figures_clang/xor.png" alt="Xor efficiency comparison"/>
 </picture>

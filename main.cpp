@@ -40,8 +40,8 @@ struct full_mult<T, std::enable_if_t<helper<T>::is_midint>> {
     for (size_t i = 0; i < num_iters; ++i) {
         for (size_t j = 0; j < reps; ++j) {
             Midint<2 * num_bits> res = regs[j].template full_multiply(regs[j + reps]);
-            regs[j] = res.template high_part<num_limbs>();
-            regs[j] ^= res.template low_part<num_limbs>();
+            regs[j] = res.template high_part<num_bits>();
+            regs[j] ^= res.template low_part<num_bits>();
         }
     }
     epilogue();
@@ -150,8 +150,8 @@ struct full_square<T, std::enable_if_t<helper<T>::is_midint>> {
     for (size_t i = 0; i < num_iters; ++i) {
         for (size_t j = 0; j < reps; ++j) {
             Midint<2 * num_bits> res = regs[j].template square();
-            regs[j] = res.template high_part<num_limbs>();
-            regs[j] ^= res.template low_part<num_limbs>();
+            regs[j] = res.template high_part<num_bits>();
+            regs[j] ^= res.template low_part<num_bits>();
             regs[j] ^= regs[j + reps];  // avoid zeroing out.
         }
     }
@@ -188,7 +188,7 @@ void run_benchmark(size_t cycles_per_test, std::array<double, 8> rates, std::str
 
 int main(int argc, char** argv) {
     if (argc != 2) {
-        println("Error! enter approximate time in seconds to run each benchmark!", argc);
+        println("Error! enter approximate time in seconds to run each benchmark! Number of arguments should be 1, but is", argc-1);
         return 1;
     }
     double time_each_test = atof(argv[1]);

@@ -17,8 +17,11 @@ namespace {
 template <size_t sz>
 struct midint;
 
-template <size_t num_bits, class = std::enable_if_t<num_bits % 64 == 0>>
-using Midint = midint<num_bits / 64>;
+constexpr size_t SIZE_T_BITS = 64;
+static_assert(sizeof(size_t) == 8);
+
+template <size_t num_bits, class = std::enable_if_t<num_bits % SIZE_T_BITS == 0>>
+using Midint = midint<num_bits / SIZE_T_BITS>;
 
 #ifdef YAY_WE_HAVE_BOOST
 template <size_t num_bits>
@@ -26,7 +29,6 @@ using boost_uint = boost::multiprecision::number<boost::multiprecision::cpp_int_
 
 template <size_t num_bits>
 using boost_int = boost::multiprecision::number<boost::multiprecision::cpp_int_backend<num_bits, num_bits, boost::multiprecision::signed_magnitude>>;
-#endif
 
 template <typename boost_int_type>
 void trim_boost(boost_int_type &var) {
@@ -38,6 +40,7 @@ void trim_boost(boost_int_type &var) {
         var.backend().resize(new_size, 0);
     }
 }
+#endif
 
 // Number is stored as Big Endian.
 // sz = number of limbs. Everything is modulo 2^(64*sz), i.e. 2's complement.
@@ -45,12 +48,12 @@ void trim_boost(boost_int_type &var) {
 template <size_t sz>
 struct midint {
     static_assert(0 < sz and sz < 128, "Notice midint expects to receive number of 64-limbs, not bits");
-    static constexpr size_t num_bits = 64 * sz;
+    static constexpr size_t num_bits = SIZE_T_BITS * sz;
     static constexpr size_t num_limbs = sz;
     using uchar_t = unsigned char;
     using i64 = long long unsigned int;
 
-    // uninitialized
+    // default constructor does not initialize
     midint() {}
     midint(std::array<i64, sz> lo_to_hi) : L(std::move(lo_to_hi)) {}
     explicit midint(int64_t num) {
@@ -71,24 +74,24 @@ struct midint {
     }
 
    public:
-    explicit midint(const std::string &str) : midint(boost_int<64 * sz>(str)) {}
+    explicit midint(const std::string &str) : midint(boost_int<SIZE_T_BITS * sz>(str)) {}
 
-    explicit midint(const boost_uint<64 * sz> &num) : midint((i64 *)num.backend().limbs(), (size_t)num.backend().size()) {}
-    explicit midint(const boost_int<64 * sz> &num) : midint((i64 *)num.backend().limbs(), (size_t)num.backend().size()) {
+    explicit midint(const boost_uint<SIZE_T_BITS * sz> &num) : midint((i64 *)num.backend().limbs(), (size_t)num.backend().size()) {}
+    explicit midint(const boost_int<SIZE_T_BITS * sz> &num) : midint((i64 *)num.backend().limbs(), (size_t)num.backend().size()) {
         if (num.sign() == -1) {
             negate_inplace();
         }
     }
-    explicit operator boost_uint<64 * sz>() const {
-        boost_uint<64 * sz> res;
+    explicit operator boost_uint<SIZE_T_BITS * sz>() const {
+        boost_uint<SIZE_T_BITS * sz> res;
         // can we do without mallocs?
         res.backend().resize(sz, 0);
         std::copy_n(L.begin(), sz, (i64 *)res.backend().limbs());
         trim_boost(res);
         return res;
     }
-    explicit operator boost_int<64 * sz>() const {
-        boost_int<64 * sz> res;
+    explicit operator boost_int<SIZE_T_BITS * sz>() const {
+        boost_int<SIZE_T_BITS * sz> res;
         bool minus_sign = (int64_t(L[sz - 1]) >> 63);
         res.backend().resize(sz, 0);
         if (minus_sign) {
@@ -107,13 +110,13 @@ struct midint {
 
     std::string to_unsigned_string() const {
         std::stringstream ss;
-        ss << boost_uint<64 * sz>(*this);
+        ss << boost_uint<SIZE_T_BITS * sz>(*this);
         return ss.str();
     }
 
     std::string to_signed_string() const {
         std::stringstream ss;
-        ss << boost_int<64 * sz>(*this);
+        ss << boost_int<SIZE_T_BITS * sz>(*this);
         return ss.str();
     }
 
@@ -130,8 +133,9 @@ struct midint {
 #endif
     explicit operator int64_t() const { return L[0]; }
 
-    template <size_t sz2>
-    midint<sz2> high_part() const {
+    template <size_t sz2_bits>
+    Midint<sz2_bits> high_part() const {
+        constexpr size_t sz2 = sz2_bits / SIZE_T_BITS;
         static_assert(sz2 <= sz);
         midint<sz2> R;
         for (size_t i = 0; i < sz2; ++i) {
@@ -140,8 +144,9 @@ struct midint {
         return R;
     }
 
-    template <size_t sz2>
-    midint<sz2> low_part() const {
+    template <size_t sz2_bits>
+    Midint<sz2_bits> low_part() const {
+        constexpr size_t sz2 = sz2_bits / SIZE_T_BITS;
         static_assert(sz2 <= sz);
         midint<sz2> R;
         for (size_t i = 0; i < sz2; ++i) {
@@ -150,8 +155,9 @@ struct midint {
         return R;
     }
 
-    template <size_t extend_to>
-    midint<extend_to> extend_unsigned() const {
+    template <size_t extend_to_bits>
+    Midint<extend_to_bits> extend_unsigned() const {
+        constexpr size_t extend_to = extend_to_bits / SIZE_T_BITS;
         static_assert(extend_to >= sz);
         midint<extend_to> R;
         for (size_t i = 0; i < sz; ++i) {
@@ -162,8 +168,10 @@ struct midint {
         }
         return R;
     }
-    template <size_t extend_to>
-    midint<extend_to> extend_signed() const {
+    
+    template <size_t extend_to_bits>
+    Midint<extend_to_bits> extend_signed() const {
+        constexpr size_t extend_to = extend_to_bits / SIZE_T_BITS;
         static_assert(extend_to >= sz);
         midint<extend_to> R;
         for (size_t i = 0; i < sz; ++i) {
@@ -181,8 +189,9 @@ struct midint {
         return R;
     }
 
-    template <size_t num_words64_to_shift_by>
-    midint<sz + num_words64_to_shift_by> shift_left() const {
+    template <size_t num_bits_to_shift_by>
+    Midint<num_bits + num_bits_to_shift_by> shift_left() const {
+        constexpr size_t num_words64_to_shift_by = num_bits_to_shift_by / SIZE_T_BITS;
         midint<sz + num_words64_to_shift_by> R;
         for (size_t i = 0; i < sz; ++i) {
             R.L[i + num_words64_to_shift_by] = L[i];
@@ -327,43 +336,45 @@ struct midint {
     template <size_t sz2>
     midint operator*=(const midint<sz2> B) {
         static_assert(sz2 <= sz);
-        return (*this = this->multiply<sz, sz2>(B));
+        return (*this = this->multiply<SIZE_T_BITS*sz, sz2>(B));
     }
 
     // performs a full multiplication.
     template <size_t sz2>
     midint<sz + sz2> full_multiply(const midint<sz2> B) const {
-        return this->multiply<sz + sz2, sz2>(B);
+        return this->multiply<SIZE_T_BITS*(sz + sz2), sz2>(B);
     }
 
-    template <size_t out_size, size_t sz2>
-    midint<out_size> multiply(const midint<sz2> B) const {
+    template <size_t out_size_bits, size_t sz2>
+    Midint<out_size_bits> multiply(const midint<sz2> B) const {
         // TODO: experiment with karatsuba
+        constexpr size_t out_size = out_size_bits / SIZE_T_BITS;
         if constexpr (sz2 < sz) {
-            return B.template multiply<out_size>(*this);
+            return B.template multiply<SIZE_T_BITS*out_size>(*this);
         } else {
             static_assert(out_size <= sz + sz2 and out_size >= sz2);
             if constexpr (sz > 8) {
                 constexpr size_t _8 = 8;
-                auto R1 = this->low_part<_8>().template multiply<std::min(out_size, _8 + sz2)>(B);
-                auto R2 = this->high_part<sz - _8>().template multiply<out_size - _8>(
-                    B.template low_part<std::min(out_size - _8, sz2)>());
-                return R1.template extend_unsigned<out_size>() += R2.template shift_left<_8>();
+                auto R1 = this->low_part<SIZE_T_BITS*_8>().template multiply<SIZE_T_BITS*std::min(out_size, _8 + sz2)>(B);
+                auto R2 = this->high_part<SIZE_T_BITS*(sz - _8)>().template multiply<SIZE_T_BITS*(out_size - _8)>(
+                    B.template low_part<SIZE_T_BITS*std::min(out_size - _8, sz2)>());
+                return R1.template extend_unsigned<SIZE_T_BITS*out_size>() += R2.template shift_left<SIZE_T_BITS*_8>();
             } else if constexpr (sz2 > 12) {
                 constexpr size_t _8 = 8;
-                auto R1 = B.template low_part<_8>().template multiply<std::min(out_size, _8 + sz)>(*this);
-                auto R2 = B.template high_part<sz2 - _8>().template multiply<out_size - _8>(
-                    this->template low_part<std::min(out_size - _8, sz)>());
-                return R1.template extend_unsigned<out_size>() += R2.template shift_left<_8>();
+                auto R1 = B.template low_part<SIZE_T_BITS*_8>().template multiply<SIZE_T_BITS*std::min(out_size, _8 + sz)>(*this);
+                auto R2 = B.template high_part<SIZE_T_BITS * (sz2 - _8)>().template multiply<SIZE_T_BITS*(out_size - _8)>(
+                    this->template low_part<SIZE_T_BITS*std::min(out_size - _8, sz)>());
+                return R1.template extend_unsigned<SIZE_T_BITS*out_size>() += R2.template shift_left<SIZE_T_BITS*_8>();
             } else {
-                return this->school_multiply<out_size, sz2>(B);
+                return this->school_multiply<SIZE_T_BITS*out_size, sz2>(B);
             }
         }
     }
 
-    template <size_t out_size, size_t sz2>
-    midint<out_size> polynomial_multiply(const midint<sz2> B) const {
+    template <size_t out_size_bits, size_t sz2>
+    Midint<out_size_bits> polynomial_multiply(const midint<sz2> B) const {
         // TODO: write with intrinsics, compare to school.
+        constexpr size_t out_size = out_size_bits / SIZE_T_BITS;
         // From boost's multiplication.
         // Comba Multiplier - based on Paul Comba's Exponentiation cryptosystems on the IBM PC, 1990
         midint<out_size> R;
@@ -398,8 +409,9 @@ struct midint {
         return R;
     }
 
-    template <size_t out_size, size_t sz2>
-    midint<out_size> school_multiply(const midint<sz2> B) const {
+    template <size_t out_size_bits, size_t sz2>
+    Midint<out_size_bits> school_multiply(const midint<sz2> B) const {
+        constexpr size_t out_size = out_size_bits / SIZE_T_BITS;
         static_assert(out_size <= sz + sz2 and out_size >= sz2 and sz2 >= sz);
         midint<out_size> R;
         if constexpr (sz == 1) {
@@ -467,30 +479,31 @@ struct midint {
     // inspired by paper "Speeding Up Big-Numbers Squaring" due to Gueron, Krasnov.
     // Equivalent to: return this->half_multiply(*this);
     midint<sz> half_square() const {
-        return this->template square<sz>();
+        return this->template square<SIZE_T_BITS*sz>();
     }
 
-    template <size_t out_size = 2 * sz>
-    midint<out_size> square() const {
+    template <size_t out_size_bits = 2 * num_bits>
+    Midint<out_size_bits> square() const {
+        constexpr size_t out_size = out_size_bits / SIZE_T_BITS;
         if constexpr(out_size < sz) {
-            return this->low_part<out_size>().template square<out_size>();
+            return this->low_part<SIZE_T_BITS*out_size>().template square<SIZE_T_BITS*out_size>();
         } else if constexpr (out_size > 8) {
             constexpr size_t h = sz / 5 * 2;
-            auto lo = this->low_part<h>();
-            auto hi = this->high_part<sz - h>();
-            auto R1 = lo.template square<std::min(out_size, 2*h)>();
-            auto res = R1.template extend_unsigned<out_size>();
-            auto R2 = hi.template multiply<std::min(out_size - h, sz)>(lo);
+            auto lo = this->low_part<SIZE_T_BITS*h>();
+            auto hi = this->high_part<SIZE_T_BITS*(sz - h)>();
+            auto R1 = lo.template square<SIZE_T_BITS*std::min(out_size, 2*h)>();
+            auto res = R1.template extend_unsigned<SIZE_T_BITS*out_size>();
+            auto R2 = hi.template multiply<SIZE_T_BITS*std::min(out_size - h, sz)>(lo);
             constexpr size_t R2_limbs = R2.num_limbs;
             uchar_t c = R2.add_inplace_return_carry(R2);
-            auto _2R2 = R2.template extend_unsigned<out_size - h>();
+            auto _2R2 = R2.template extend_unsigned<SIZE_T_BITS*(out_size - h)>();
             if constexpr(out_size - h > R2_limbs) {
                 _2R2.L[R2_limbs] = c;
             }
-            res += _2R2.template shift_left<h>();
+            res += _2R2.template shift_left<SIZE_T_BITS*h>();
             if constexpr(out_size > 2*h) {
-                auto R3 = hi.template square<out_size - 2*h>();
-                res += R3.template shift_left<2*h>();
+                auto R3 = hi.template square<SIZE_T_BITS*(out_size - 2*h)>();
+                res += R3.template shift_left<SIZE_T_BITS*2*h>();
             }
             return res;
         } else {

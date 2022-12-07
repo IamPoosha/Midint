@@ -7,7 +7,14 @@ This tiny library defines a `Midint<n>` structure which represents an (unsigned)
 The library is designed for simplicy -- you may seamlessly convert between boost's fixed size `cpp_int`. Also, the following plots demonstrate the performance gain relative to `cpp_int`.
 
 ## Code samples
-TODO
+Python's `0xFEDCBA9876543210 ** 8 // 2**(512-64)` may be written as
+```
+auto a = Midint<64>(0xFEDCBA9876543210);
+Midint<128> b = a.square();
+Midint<256> c = b.square();
+Midint<512> d = c.square();
+std::cout << d.high_part<64>();
+```
 
 ## How to compile
 Just `#include "miding.h"` wherever you use the library.

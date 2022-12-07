@@ -2,9 +2,11 @@
 A medium-sized integer arithmetic library. Lightweight design for efficiency and flexibility.
 
 ## Purpose
-This tiny library defines a `Midint<n>` structure which represents an (unsigned) integer with `n` bits (supports only `n % 64 == 0`). It allows simple arithmetic and logic of these numbers, with the exception of divison which is currently not implemented.
+This tiny library defines a `Midint<n>` structure which represents an (unsigned) integer with `n` bits (supports only `n % 64 == 0`). It allows simple arithmetic and logic of these numbers, with the exception of divison which is currently not implemented[^1].
 
-The library is designed for simplicy -- you may seamlessly convert between boost's fixed size `cpp_int`. Also, the following plots demonstrate the performance gain relative to `cpp_int`.
+The library is designed for simplicy -- you may seamlessly convert between `Midint` and boost's fixed size `cpp_int`. Also, the following plots demonstrate the performance gain relative to `cpp_int`.
+
+[^1]: Since `Midint` is easily convertible to `cpp_int`, you may still divide and gain performance in case your application is not divisons-intensive.
 
 ## Code samples
 Python's `0xFEDCBA9876543210 ** 8 // 2**(512-64)` may be written as

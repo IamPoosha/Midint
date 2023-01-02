@@ -4,7 +4,7 @@ A medium-sized integer arithmetic library. Lightweight design for efficiency and
 ## Purpose
 This tiny library defines a `Midint<n>` structure which represents an (unsigned) integer with `n` bits (supports only `n % 64 == 0`). It allows simple arithmetic and logic of these numbers, with the exception of divison which is currently not implemented[^1].
 
-The library is designed for simplicy -- you may seamlessly convert between `Midint` and boost's fixed size `cpp_int`. Also, the following plots demonstrate the performance gain relative to `cpp_int`.
+The library is designed for simplicity -- you may seamlessly convert between `Midint` and boost's fixed size `cpp_int`. Also, the following plots demonstrate the performance gain relative to `cpp_int`.
 
 [^1]: Since `Midint` is easily convertible to `cpp_int`, you may still divide and gain performance in case your application is not divisons-intensive.
 
@@ -19,9 +19,18 @@ std::cout << d.high_part<64>();
 ```
 
 ## How to compile
-Just `#include "miding.h"` wherever you use the library.
+Just `#include "midint.h"` wherever you use the library.
 
 Feel free to leave comments about this project :)
+
+### Alternatives
+GMP also has a set of fixed-size arithmetic functions.
+
+For documentation, see: https://gmplib.org/manual/Low_002dlevel-Functions
+
+For implementation, see: https://github.com/alisw/GMP/tree/master/mpn/generic
+
+Due to the complexity of the integration with that code, it was not included in the benchmark. 
 
 ## Performance comparison
 
